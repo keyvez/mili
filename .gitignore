@@ -1,0 +1,10 @@
+# Ignore API keys
+mailgun_api_key
+
+# Ignore build artifacts
+/bin
+/tmp
+
+# Ignore OS files
+.DS_Store
+_templ.go
