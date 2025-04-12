@@ -41,8 +41,8 @@ substitutions:
   _DEPLOY_REGION: us-central1
   _AR_HOSTNAME: us-central1-docker.pkg.dev
   _PLATFORM: managed
-  _SERVICE_NAME: disaster
+  _SERVICE_NAME: mili
 tags:
   - gcp-cloud-build-deploy-cloud-run
   - gcp-cloud-build-deploy-cloud-run-managed
-  - disaster
+  - mili

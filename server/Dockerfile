@@ -1,5 +1,5 @@
 FROM golang:1.24.2-alpine3.21 as builder
-WORKDIR /app
+WORKDIR /server
 COPY go.* ./
 RUN go mod download
 COPY . ./
@@ -15,7 +15,7 @@ FROM alpine:3.21.0
 #     rm -rf /var/lib/apt/lists/*
 
 # Copy the binary to the production image from the builder stage.
-COPY --from=builder /app/main /app/main
+COPY --from=builder /server/main /server/main
 
 # Run the web service on container startup.
-CMD ["/app/main"]
+CMD ["/server/main"]
