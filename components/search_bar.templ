@@ -1,0 +1,44 @@
+package components
+
+templ SearchBar() {
+    <div class="relative mb-6">
+        <input 
+            type="search" 
+            class="w-full p-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Search resources..."
+            id="resource-search"
+        />
+        <button 
+            class="absolute right-4 top-4"
+            aria-label="Filter"
+        >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+            </svg>
+        </button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.querySelector('#resource-search');
+            const filterButton = document.querySelector('button[aria-label="Filter"]');
+            const categoryCards = document.querySelectorAll('.category-card');
+
+            searchInput.addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                categoryCards.forEach(card => {
+                    const title = card.textContent.toLowerCase();
+                    if (title.includes(searchTerm)) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+
+            filterButton.addEventListener('click', function() {
+                // Add filter logic here
+            });
+        });
+    </script>
+} 

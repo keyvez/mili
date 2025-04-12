@@ -1,0 +1,12 @@
+package components
+
+import "disaster/model"
+
+templ CategoriesGrid(categories []model.Category) {
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+        for _, category := range categories {
+            @CategoryCard(category)
+        }
+    </div>
+    <div id="resources-container" class="mt-4"></div>
+}

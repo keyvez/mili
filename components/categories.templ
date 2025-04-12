@@ -1,0 +1,9 @@
+package components
+
+import "disaster/model"
+
+templ CategoriesList(categories []model.Category) {
+    <div class="container mx-auto px-4">
+        @CategoryCardList(categories)
+    </div>
+}

@@ -1,0 +1,34 @@
+package components
+
+import "disaster/model"
+
+script handleResourceClick(link string) {
+    return handleSheetResource(link);
+}
+
+templ ResourcesList(resources []model.Resource) {
+    @SheetHandlers()
+    <div class="flex flex-col gap-2 p-4 max-w-3xl mx-auto relative">
+        <div id="loading-spinner" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+            <div class="bg-white p-4 rounded-lg shadow-lg flex items-center space-x-2">
+                <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
+                <span>Loading...</span>
+            </div>
+        </div>
+        <div id="resources-list" class="flex flex-col gap-2">
+            for _, resource := range resources {
+                <button 
+                    type="button"
+                    data-url={ resource.Link }
+                    class="block text-left bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow hover:bg-blue-50"
+                    onclick={ handleResourceClick(resource.Link) }
+                >
+                    <h3 class="text-lg font-semibold mb-1 text-blue-600">{ resource.Name }</h3>
+                    <p class="text-gray-600 text-sm">{ resource.Description }</p>
+                </button>
+            }
+        </div>
+        <div id="sheet-tabs" class="hidden"></div>
+        <div id="sheet-data" class="hidden"></div>
+    </div>
+}

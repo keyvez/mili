@@ -1,0 +1,17 @@
+package components
+
+type SectionTitleProps struct {
+	Title       string
+	Description string
+}
+
+templ SectionTitle(props SectionTitleProps) {
+	<div>
+		<h2 class="title sm:text-4xl md:text-5xl">
+			{ props.Title }
+		</h2>
+		<p class="mb-16 mx-auto intro sm:max-w-xl">
+			{ props.Description }
+		</p>
+	</div>
+} 

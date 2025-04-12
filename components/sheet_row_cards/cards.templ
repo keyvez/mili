@@ -1,0 +1,292 @@
+package sheet_row_cards
+
+import (
+	"time"
+	"strings"
+)
+
+// DiscountRow represents a row in the discount codes sheet
+type DiscountRow struct {
+	DateAdded      time.Time    `col:"Date Added"`
+	Company        CompanyField `col:"Company"`
+	Category       string       `col:"Category"`
+	DiscountAmount string       `col:"Discount Amount"`
+	Code          string       `col:"Code"`
+	Notes         string       `col:"Notes"`
+}
+
+// FreeProductRow represents a row in the free products sheet
+type FreeProductRow struct {
+	DateAdded      time.Time `col:"Date Added"`
+	Company        string    `col:"Company"`
+	Category       string    `col:"Category"`
+	Type           string    `col:"Type"`
+	Description    string    `col:"Description"`
+	HowToGetInTouch string   `col:"How to Get in Touch"`
+	Link           string    `col:"Link"`
+}
+
+type PickupCardRow struct {
+	Company  CompanyField `col:"Company"`
+	Products string      `col:"Products"`
+	Where    string      `col:"Where"`
+	Notes    string      `col:"Notes"`
+}
+
+type ServiceCardRow struct {
+	DateAdded      time.Time    `col:"Date Added"`
+	Company        CompanyField `col:"Company"`
+	Category       string       `col:"Category"`
+	HowToGetInTouch string      `col:"How to Get in Touch"`
+	Link           string       `col:"Link"`
+	Notes          string       `col:"Notes"`
+}
+
+templ DiscountCard(row any) {
+	if discount, ok := row.(DiscountRow); ok {
+		@CardFrame(true) {
+			if discount.Company.Link != "" {
+				<div>
+					<div class="flex justify-between items-start mb-4">
+						<div data-link={ templ.JSONString(discount.Company.Link) } onclick="window.open(processLink(JSON.parse(this.dataset.link)), '_blank')">
+							<h3 class="text-xl font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-2">
+								{ discount.Company.Text }
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+									<path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+									<path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+								</svg>
+							</h3>
+							@CardCategory(discount.Category)
+						</div>
+						<div class="text-right">
+							@CardChip(discount.DiscountAmount)
+						</div>
+					</div>
+					<div class="bg-gray-50 rounded p-3 mb-4 flex justify-between items-center group" onclick="handleCopyClick(this); event.stopPropagation();" data-code={ templ.EscapeString(discount.Code) }>
+						<p class="text-lg font-mono text-gray-700">Code: { discount.Code }</p>
+						<button 
+							type="button" 
+							class="p-2 text-gray-400 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity"
+							onclick="handleCopyButtonClick(this, event)"
+							data-code={ templ.EscapeString(discount.Code) }
+							title="Copy to clipboard"
+						>
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+								<path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z" />
+								<path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5zM15 11h2a1 1 0 110 2h-2v-2z" />
+							</svg>
+						</button>
+					</div>
+					if discount.Notes != "" {
+						<p class="text-gray-600 text-sm">
+							@renderNotes(discount.Notes)
+						</p>
+					}
+					@CardDate(discount.DateAdded)
+				</div>
+			} else {
+				<div>
+					<div class="flex justify-between items-start mb-4">
+						<div>
+							@CardTitle(discount.Company.Text)
+							@CardCategory(discount.Category)
+						</div>
+						<div class="text-right">
+							@CardChip(discount.DiscountAmount)
+						</div>
+					</div>
+					<div class="bg-gray-50 rounded p-3 mb-4 flex justify-between items-center group" onclick="handleCopyClick(this)" data-code={ templ.EscapeString(discount.Code) }>
+						<p class="text-lg font-mono text-gray-700">Code: { discount.Code }</p>
+						<button 
+							type="button" 
+							class="p-2 text-gray-400 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity"
+							onclick="handleCopyButtonClick(this, event)"
+							data-code={ templ.EscapeString(discount.Code) }
+							title="Copy to clipboard"
+						>
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+								<path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z" />
+								<path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5zM15 11h2a1 1 0 110 2h-2v-2z" />
+							</svg>
+						</button>
+					</div>
+					if discount.Notes != "" {
+						<p class="text-gray-600 text-sm">
+							@renderNotes(discount.Notes)
+						</p>
+					}
+					@CardDate(discount.DateAdded)
+				</div>
+			}
+		}
+	}
+}
+
+templ FreeProductCard(row any) {
+	if product, ok := row.(FreeProductRow); ok {
+		@CardFrame(false) {
+			<div class="flex justify-between items-start mb-4">
+				<div>
+					@CardTitle(product.Company)
+					@CardCategory(product.Category)
+				</div>
+				<div class="text-right">
+					@CardChip(product.Type)
+				</div>
+			</div>
+			@CardDescription(product.Description)
+			<div class="mt-4">
+				<p class="text-gray-600 mb-2">How to get in touch: { product.HowToGetInTouch }</p>
+				if product.Link != "" {
+					@CardLink("Learn More", product.Link)
+				}
+			</div>
+			@CardDate(product.DateAdded)
+		}
+	}
+}
+
+templ PickupCard(row any) {
+	if pickup, ok := row.(PickupCardRow); ok {
+		@CardFrame(true) {
+			if pickup.Company.Link != "" {
+				<div>
+					<div class="flex justify-between items-start mb-4">
+						<div data-link={ templ.JSONString(pickup.Company.Link) } onclick="window.open(processLink(JSON.parse(this.dataset.link)), '_blank')">
+							<h3 class="text-xl font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-2">
+								{ pickup.Company.Text }
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+									<path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+									<path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+								</svg>
+							</h3>
+						</div>
+					</div>
+					<div class="space-y-2 mb-4">
+						<div class="bg-gray-50 rounded p-3">
+							<h4 class="font-semibold text-gray-700">Products Available:</h4>
+							<p class="text-gray-600">{ pickup.Products }</p>
+						</div>
+						<div class="bg-gray-50 rounded p-3" data-location={ templ.JSONString(pickup.Where) }
+									onclick="window.open('https://www.google.com/maps/search/' + encodeURIComponent(JSON.parse(this.dataset.location)), '_blank')">
+							<h4 class="font-semibold text-gray-700">Where:</h4>
+							<div class="flex items-center gap-2">
+								<p class="text-gray-600">{ pickup.Where }</p>
+								<button 
+									class="inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full"
+									title="Open in Google Maps"
+								>
+									<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+										<path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+									</svg>
+								</button>
+							</div>
+						</div>
+					</div>
+					if pickup.Notes != "" {
+						<p class="text-gray-600 text-sm">
+							@renderNotes(pickup.Notes)
+						</p>
+					}
+				</div>
+			} else {
+				<div>
+					<div class="flex justify-between items-start mb-4">
+						<div>
+							@CardTitle(pickup.Company.Text)
+						</div>
+					</div>
+					<div class="space-y-2 mb-4">
+						<div class="bg-gray-50 rounded p-3">
+							<h4 class="font-semibold text-gray-700">Products Available:</h4>
+							<p class="text-gray-600">{ pickup.Products }</p>
+						</div>
+						<div class="bg-gray-50 rounded p-3">
+							<h4 class="font-semibold text-gray-700">Where:</h4>
+							<div class="flex items-center gap-2">
+								<p class="text-gray-600">{ pickup.Where }</p>
+								<button 
+									class="inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full"
+									data-location={ templ.JSONString(pickup.Where) }
+									onclick="window.open('https://www.google.com/maps/search/' + encodeURIComponent(JSON.parse(this.dataset.location)), '_blank')"
+									title="Open in Google Maps"
+								>
+									<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+										<path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+									</svg>
+								</button>
+							</div>
+						</div>
+					</div>
+					if pickup.Notes != "" {
+						<p class="text-gray-600 text-sm">
+							@renderNotes(pickup.Notes)
+						</p>
+					}
+				</div>
+			}
+		}
+	}
+}
+
+templ ServiceCard(row any) {
+	if service, ok := row.(ServiceCardRow); ok {
+		@CardFrame(false) {
+			<div class="flex justify-between items-start mb-4">
+				<div>
+					@CardTitle(service.Company.Text)
+					@CardCategory(service.Category)
+				</div>
+			</div>
+			<div class="mt-4 space-y-3">
+				if service.Notes != "" {
+					<div>
+						<h4 class="font-semibold text-gray-700">Additional Information:</h4>
+						<p class="text-gray-600">
+							@renderNotes(service.Notes)
+						</p>
+					</div>
+				}
+				<div>
+					<button 
+						class="mt-2 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+						data-link={ templ.JSONString(service.Link) }
+						onclick="window.open(processLink(JSON.parse(this.dataset.link)), '_blank')"
+					>
+						{ service.HowToGetInTouch }
+					</button>
+				</div>
+			</div>
+			@CardDate(service.DateAdded)
+		}
+	}
+}
+
+templ renderNotes(notes string) {
+	for _, word := range strings.Fields(notes) {
+		if strings.HasPrefix(word, "http://") || strings.HasPrefix(word, "https://") {
+			<a 
+				href="#" 
+				data-link={ templ.JSONString(word) }
+				onclick="window.open(processLink(JSON.parse(this.dataset.link)), '_blank'); return false;" 
+				class="text-blue-600 hover:text-blue-800" 
+				onclick="event.stopPropagation()"
+			>
+				{ word }
+			</a>
+			{ " " }
+		} else {
+			{ word + " " }
+		}
+	}
+}
+
+
+
+func init() {
+	// Register all card types
+	RegisterCardType[DiscountRow]("DiscountCard", DiscountCard)
+	RegisterCardType[FreeProductRow]("FreeProductCard", FreeProductCard)
+	RegisterCardType[PickupCardRow]("PickupCard", PickupCard)
+	RegisterCardType[ServiceCardRow]("ServiceCard", ServiceCard)
+}

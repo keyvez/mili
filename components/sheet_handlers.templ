@@ -1,0 +1,93 @@
+package components
+
+script SheetHandlers() {
+    const loadingSpinner = document.getElementById('loading-spinner');
+    
+    const showLoading = () => {
+        if (loadingSpinner) loadingSpinner.classList.remove('hidden');
+    };
+    
+    const hideLoading = () => {
+        if (loadingSpinner) loadingSpinner.classList.add('hidden');
+    };
+
+    window.handleSheetResource = async function(url) {
+        const sheetID = (() => {
+            const patterns = [
+                'spreadsheets/d/',
+                'docs.google.com/spreadsheets/d/',
+            ];
+            
+            for (const pattern of patterns) {
+                const idx = url.indexOf(pattern);
+                if (idx !== -1) {
+                    const start = idx + pattern.length;
+                    const end = url.indexOf('/', start);
+                    if (end === -1) {
+                        return url.slice(start);
+                    }
+                    return url.slice(start, end);
+                }
+            }
+            return '';
+        })();
+
+        if (sheetID) {
+            try {
+                showLoading();
+                const tabsResponse = await fetch(`/api/sheet-tabs/${sheetID}`);
+                if (tabsResponse.ok) {
+                    const tabs = await tabsResponse.json();
+                    if (tabs.length > 0) {
+                        // Hide resources list and show tabs
+                        document.getElementById('resources-list').classList.add('hidden');
+                        const tabsContainer = document.getElementById('sheet-tabs');
+                        
+                        // Render the tabs component
+                        const response = await fetch('/api/render/sheet-tabs', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ tabs, sheetID }),
+                        });
+                        if (response.ok) {
+                            const html = await response.text();
+                            tabsContainer.innerHTML = html;
+                            tabsContainer.classList.remove('hidden');
+                        }
+                    } else {
+                        window.open(url, "_blank");
+                    }
+                } else {
+                    window.open(url, "_blank");
+                }
+            } catch (error) {
+                console.error("Error fetching sheet data:", error);
+                window.open(url, "_blank");
+            } finally {
+                hideLoading();
+            }
+        }
+        return false;
+    };
+
+    window.handleTabClick = async function(sheetId, tabTitle) {
+        try {
+            showLoading();
+            const dataResponse = await fetch(`/api/sheet-data/${sheetId}/${tabTitle}`);
+            if (dataResponse.ok) {
+                const data = await dataResponse.json();
+                // Hide tabs and show data
+                document.getElementById('sheet-tabs').classList.add('hidden');
+                const dataContainer = document.getElementById('sheet-data');
+                dataContainer.innerHTML = data.html;
+                dataContainer.classList.remove('hidden');
+            }
+        } catch (error) {
+            console.error("Error fetching tab data:", error);
+        } finally {
+            hideLoading();
+        }
+    };
+}

@@ -1,0 +1,2 @@
+# Stack
+- Uses golang, templ templating engine, HTMX for FE, and supabase for database, tailwind for css styling

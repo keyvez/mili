@@ -1,0 +1,45 @@
+/* A row that holds p, g, d, e, v in normal flow */
+.letters-row {
+  position: relative;
+  display: flex;
+  white-space: nowrap; /* Prevent letters from wrapping */
+  gap: 0.5rem;
+  color: aliceblue;
+}
+
+/* The static letters for p & g (visible at fraction=0). */
+.static-letter {}
+
+/* We'll rotate "v" from 0° to -90°. */
+#vSpan {
+  transform-origin: center center; 
+}
+
+/* Absolutely positioned orbit p & g inside .letters-row */
+.orbit-p, .orbit-g {
+  position: fixed;
+  pointer-events: none;
+  z-index: 2; /* above bits */
+}
+
+/* Bits that start half-size, drift left 50px, shrink to 50% scale, and fade in 0.5s */
+.bit-trail {
+  position: fixed;
+  font-size: 1rem; /* half size at spawn */
+  color: grey;
+  pointer-events: none;
+  z-index: 9999;
+}
+@keyframes fadeOut {
+  0%   { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.pinned-container {
+  position: fixed;
+  bottom: 100px;
+  top: 20px;
+  /* transform: translate(-50%, -50%); */
+  display: inline-block; /* Change from block to inline-block */
+  /* width: fit-content; Ensure container only takes up needed width */
+}

@@ -1,0 +1,36 @@
+package components
+
+import "disaster/gdrive"
+
+type SheetTabsProps struct {
+    Tabs []gdrive.TabInfo
+    SheetID string
+}
+
+templ SheetTabs(props SheetTabsProps) {
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+        for _, tab := range props.Tabs {
+            <div 
+                class={ 
+                    "p-4", 
+                    "rounded-lg", 
+                    "transition-all",
+                    templ.KV("bg-white hover:bg-blue-50 cursor-pointer", tab.HasConfig),
+                    templ.KV("bg-gray-100 opacity-50 cursor-not-allowed", !tab.HasConfig)
+                }
+                if tab.HasConfig {
+                    data-sheet-id={ props.SheetID }
+                    data-tab-title={ tab.Title }
+                    onclick="window.handleTabClick(this.dataset.sheetId, this.dataset.tabTitle)"
+                }
+            >
+                <h3 class="text-lg font-semibold mb-2">{ tab.Title }</h3>
+                if tab.HasConfig {
+                    <p class="text-sm text-gray-600">Click to view data</p>
+                } else {
+                    <p class="text-sm text-gray-500">No data view configured</p>
+                }
+            </div>
+        }
+    </div>
+}

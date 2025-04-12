@@ -1,0 +1,51 @@
+package sheet_row_cards
+
+import "time"
+
+templ CardFrame(clickable bool) {
+	<div class={ 
+		"bg-white rounded-lg shadow-md p-6 mb-4 hover:shadow-lg transition-shadow",
+		templ.KV("cursor-pointer", clickable),
+	}>
+		{ children... }
+	</div>
+}
+
+templ CardTitle(title string) {
+	<h3 class="text-xl font-semibold text-gray-900">{ title }</h3>
+}
+
+templ CardCategory(category string) {
+	<p class="text-sm text-gray-500">Category: { category }</p>
+}
+
+templ CardDate(date time.Time) {
+	<div class="mt-4 text-xs text-gray-400">
+		Added: { date.Format("Jan 2, 2006") }
+	</div>
+}
+
+templ CardChip(text string) {
+	<span class="inline-block bg-blue-100 text-blue-800 text-sm font-semibold px-3 py-1 rounded">
+		{ text }
+	</span>
+}
+
+templ CardDescription(text string) {
+	<p class="text-gray-600 text-sm">{ text }</p>
+}
+
+templ CardLink(text string, link string) {
+	<a 
+		href="#" 
+		data-link={ templ.JSONString(link) }
+		onclick="window.open(processLink(JSON.parse(this.dataset.link)), '_blank'); return false;" 
+		class="text-blue-600 hover:text-blue-800 inline-flex items-center gap-1"
+	>
+		{ text }
+		<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+			<path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+			<path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+		</svg>
+	</a>
+}
